@@ -29,12 +29,12 @@ func (Config *Config) WriteConfig(filepath string) error {
 
 // Reference is
 type Reference struct {
-	Label     string          `json:"label"`
-	Accession string          `json:"accession"`
-	Length    int             `json:"length"`
-	Genes     map[string]Gene `json:"genes"`
-	// TODO: amplicaons needed
-	Sequence string `json:"sequence"`
+	Label     string            `json:"label"`
+	Accession string            `json:"accession"`
+	Length    int               `json:"length"`
+	Genes     map[string]Gene   `json:"genes"`
+	Amplicons [][]int           `json:"amplicons"`
+	Sequence string             `json:"sequence"`
 }
 
 // NewReference is the constructor
@@ -43,7 +43,8 @@ func NewReference() *Reference {
 		Label:     "",
 		Accession: "",
 		Length:    0,
-		Genes:     make(map[string]Gene),
+        Genes:     make(map[string]Gene),
+        Amplicons: [][]int{},
 		Sequence:  "",
 	}
 }

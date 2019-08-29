@@ -22,13 +22,16 @@ THE SOFTWARE.
 package cmd
 
 import (
+	"bufio"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"strings"
 	"time"
 
 	"github.com/biogo/biogo/alphabet"
+	"github.com/biogo/biogo/io/featio/bed"
 	"github.com/biogo/biogo/io/seqio"
 	"github.com/biogo/biogo/io/seqio/fasta"
 	"github.com/biogo/biogo/seq/linear"
@@ -136,6 +139,22 @@ func runConvert() {
 	featureMap, err := gff.ExtractFeatures(*gffFile)
 	misc.ErrorCheck(err)
 	newRef.Genes = featureMap
+
+	// get the BED info for the reference
+	amplicons := [][]int{}
+	fh, err := os.Open(bedFiles[0])
+	misc.ErrorCheck(err)
+	bedReader, err := bed.NewReader(bufio.NewReader(fh), 4)
+	misc.ErrorCheck(err)
+	for {
+		entry, err := bedReader.Read()
+		if err == io.EOF {
+			break
+		}
+		misc.ErrorCheck(err)
+		amplicons = append(amplicons, []int{entry.Start(), entry.End()})
+	}
+	newRef.Amplicons = amplicons
 
 	// create the config struct with the newly created reference
 	newConf := rampart.NewConfig(newRef)
